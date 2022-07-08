@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="InAppPurchaseTest.Views.PurchasePage"     
+             Title="{Binding Title}">
+    <StackLayout>
+        <StackLayout Orientation="Horizontal" Spacing="20" Padding="15">
+            <Label Text="Server Connection: " FontSize="Medium" />
+            <Label Text="{Binding ConnectionResult}" BackgroundColor="{Binding ConnectionColor}" FontSize="Medium"/>
+            
+        </StackLayout>
+    <StackLayout  Spacing="20" Padding="15">
+        <StackLayout Orientation="Horizontal">
+            <Button Text="  Is purchased ? " Command="{Binding Button_Get_Purchase_State_Clicked_Command}"
+            BackgroundColor="{StaticResource Primary}"/>
+            <CheckBox  IsEnabled="False" HeightRequest="20" IsChecked="{Binding ItemIsPurchased}"/>
+            <Button Text=" Is verified ? " Command="{Binding Button_Get_Verify_State_Clicked_Command}"
+            BackgroundColor="{StaticResource Primary}"/>
+            <CheckBox  IsEnabled="False" HeightRequest="20" IsChecked="{Binding ItemReceiptIsVerified}"/>
+        </StackLayout>
+        <StackLayout Orientation="Horizontal">
+            <Button Text=" Is verified externally? " Command="{Binding Button_Is_Verified_Externally_Clicked_Command}"
+            BackgroundColor="{StaticResource Primary}"/>
+        </StackLayout>
+        <Button Text="Show Purchase Details" Command="{Binding Button_Get_Availabe_Products_Clicked_Command}"
+            BackgroundColor="{StaticResource Primary}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Text="Name: " HorizontalOptions="Start"/>
+            <Label Grid.Row="1" Grid.Column="0" Text="Description: " HorizontalOptions="Start" MaxLines="2"/>
+            <Label Grid.Row="3" Grid.Column="0" Text="Duration: " HorizontalOptions="Start"/>
+            <Label Grid.Row="4" Grid.Column="0" Text="Price: " HorizontalOptions="Start"/>
+            <Entry Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"  TextColor="Gray" Text="{Binding ItemName}"  BackgroundColor="{Binding BkgdColor}" IsReadOnly="True" VerticalOptions="StartAndExpand"/>
+            <Entry Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" TextColor="Gray" Text="{Binding ItemDescription_1}" BackgroundColor="{Binding BkgdColor}" IsReadOnly="True" />
+            <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" TextColor="Gray" Text="{Binding ItemDescription_2}" BackgroundColor="{Binding BkgdColor}" IsReadOnly="True" />
+            <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" TextColor="Gray" Text="{Binding ItemDuration}" BackgroundColor="{Binding BkgdColor}" IsReadOnly="True"/>
+            <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" TextColor="Gray" Text="{Binding ItemPrice}" BackgroundColor="{Binding BkgdColor}" IsReadOnly="True"/>
+        </Grid>       
+    <Button Margin="0,10,0,0" Text="InAppPurchase"
+                        Command="{Binding Button_InAppPurchase_Clicked_Command}"
+                        BackgroundColor="{StaticResource Primary}"/>
+        </StackLayout>
+     </StackLayout>
+</ContentPage>
+
