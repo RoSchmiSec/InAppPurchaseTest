@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Xamarin.InAppPurchasing
-//namespace InAppPurchaseTest
+
 {
     public class JsonContent : HttpContent
     {

@@ -19,10 +19,11 @@
             <CheckBox  IsEnabled="False" HeightRequest="20" IsChecked="{Binding ItemReceiptIsVerified}"/>
         </StackLayout>
         <StackLayout Orientation="Horizontal">
-            <Button Text=" Is verified externally? " Command="{Binding Button_Is_Verified_Externally_Clicked_Command}"
+            <Button Text=" Is verified ext ? " Command="{Binding Button_Is_Verified_Externally_Clicked_Command}"
             BackgroundColor="{StaticResource Primary}"/>
+            <CheckBox  IsEnabled="False" HeightRequest="20" IsChecked="{Binding ItemReceiptIsVerifiedExternally}"/>
         </StackLayout>
-        <Button Text="Show Purchase Details" Command="{Binding Button_Get_Availabe_Products_Clicked_Command}"
+         <Button Text="Show Purchase Details" Command="{Binding Button_Get_Availabe_Products_Clicked_Command}"
             BackgroundColor="{StaticResource Primary}"/>
         <Grid>
             <Grid.ColumnDefinitions>

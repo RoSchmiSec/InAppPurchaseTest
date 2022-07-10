@@ -2,7 +2,7 @@
 using System.Diagnostics;
 
 namespace Xamarin.InAppPurchasing
-//namespace InAppPurchaseTest
+
 {
     public abstract class PurchaseService
     {
@@ -51,6 +51,7 @@ namespace Xamarin.InAppPurchasing
 
             return appleReceipt;
         }
+
 
         protected abstract Task<Receipt> BuyNative(Purchase purchase);
     }

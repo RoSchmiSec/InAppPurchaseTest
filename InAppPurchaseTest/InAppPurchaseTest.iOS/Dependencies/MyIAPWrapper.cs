@@ -7,7 +7,7 @@ using Xamarin.Forms;
 namespace Xamarin.InAppPurchasing.iOS.Dependencies
 {	
 	public class MyIAPWrapper : IMyIAPWrapper
-	{
+	{ 
 		ApplePurchaseService applePurchaseService;
 			
 		public async Task<string> ReturnPrice(string[] ids)	
@@ -30,6 +30,15 @@ namespace Xamarin.InAppPurchasing.iOS.Dependencies
 			var receipt =  await applePurchaseService.BuyNativeAndGetReceipt(purchase); 
             return receipt as AppleReceipt;
         }
+
+		public async Task<AppleReceipt> BuyNative(Purchase purchase)
+        {
+			applePurchaseService = new ApplePurchaseService();
+			var receipt =  await applePurchaseService.  BuyNativeAndGetReceipt(purchase); 
+            return receipt as AppleReceipt;
+        }
+
+
 	}
  }
 

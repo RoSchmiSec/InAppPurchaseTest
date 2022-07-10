@@ -9,21 +9,117 @@ using Plugin.InAppBilling;
 using Xamarin.InAppPurchasing;
 using Xamarin.Essentials;
 using InAppPurchaseTest.Interfaces;
-
+using System.Net.Http;
+using Newtonsoft.Json.Linq;
+    
 
 // Relocated to InAppPurchase.iOS.Dependencies
-/*
+
 [assembly: Dependency(typeof(MyIAPVerification))]
 
     public class MyIAPVerification : IInAppBillingVerifyPurchase
     {
         public async Task<bool> VerifyPurchase (string signedData, string signature, string productId = null, string transactionId = null)
         {
-            await Task.Delay(1);
+            // The Receipt comes in the parameter signedData.
+            // What we have to do, is to check, if this Receipt is a valid.
+            // If we find it to be valid, we return true, otherweise false.
+            // We can do the validation with the AppStore.
+            // see: -https://developer.apple.com/documentation/storekit/in-app_purchase/original_api_for_in-app_purchase/validating_receipts_with_the_app_store
+
+            Uri uriProduction = new Uri($"https://buy.itunes.apple.com/verifyReceipt");   
+            Uri uriSandbox = new Uri($"https://sandbox.itunes.apple.com/verifyReceipt");
+
+            
+            String workData = signedData;
+
+            workData.Replace(@"+", @"%2B");
+            workData.Replace(@"\n", @"");
+            workData.Replace(@"\r", @"");
+
+            /*
+            workData= signedData.Substring(0,signedData.Length - 2);
+            workData = workData + 'a';
+            */
+
+            //AppleReceipt appleReceipt = new AppleReceipt() { BundleId= "com.RoSchmiInAppPurchaseTest", Id="productId", Data = Convert.FromBase64String(workData), TransactionId="345" };
+
+
+            AppleReceipt appleReceipt = null; 
+            try
+            { 
+                appleReceipt = new AppleReceipt() {Data = Convert.FromBase64String(workData), BundleId = "com.RoSchmiInAppPurchaseTest", Id= productId, TransactionId = transactionId};
+            }
+            catch (Exception except)
+            {
+                string mess = except.Message;
+            }
+
+            
+
+            
+            //string jsonContent = new JObject(new JProperty("receipt-data", content)).ToString();
+
+            string jsonContent = new JObject(new JProperty("receipt-data", appleReceipt.Data)).ToString();
+
+            HttpResponseMessage response = null;
+            //using (HttpClient httpClient = new HttpClient() { BaseAddress = uriSandbox})
+            //{
+            HttpClient httpClient = new HttpClient() { BaseAddress = uriProduction};
+               
+            response = await httpClient.PostAsync(uriSandbox, new StringContent(jsonContent));
+
+            System.Net.HttpStatusCode? statusCode = null;
+            string responseContent = null;
+
+            if (response.IsSuccessStatusCode)
+            {
+                statusCode = response.StatusCode;
+            }
+            else
+            {
+                statusCode = response.StatusCode;
+            }
+                 
+            
+            if (response != null)
+            {
+                responseContent = await response.Content.ReadAsStringAsync();
+                
+            }
+
+            // The Receipt comes in the parameter signedData.
+            // What we have to do, is to check, if this Receipt is a valid.
+            // If we find it to be valid, we return true, otherweise false.
+            // We can do the validation with the AppStore.
+            // see: -https://developer.apple.com/documentation/storekit/in-app_purchase/original_api_for_in-app_purchase/validating_receipts_with_the_app_store
+
+            // Did not get it implemented in the time I wanted to spend,so I made a dummy/fake comparison with itself
+           
+            //AppleReceipt appleReceipt = new AppleReceipt() {Data = Convert.FromBase64String(signedData), BundleId = "", Id= productId};
+            //NSUrlSessionHandler httpClient = new NSUrlSessionHandler();
+            //var  content = new JsonContent(appleReceipt);
+            //private const string BaseUrl = "Hallo";
+            //NSUrl requestUrl = NSUrl.FromString(BaseUrl + content);
+            
+       
+            // Retrieve AppleReceipt from iPhone storage
+            /*
+            NSData receiptUrl = null;
+            if (NSBundle.MainBundle.AppStoreReceiptUrl != null)
+            {
+                receiptUrl = NSData.FromUrl(NSBundle.MainBundle.AppStoreReceiptUrl);
+            }
+
+            string theReceipt = receiptUrl?.GetBase64EncodedString(NSDataBase64EncodingOptions.None);
+            
+            bool returnResult = signedData ==  theReceipt ? true : false;
+            */
+
             return true;
         }
     }
-*/
+
    
 namespace InAppPurchaseTest.ViewModels
 {
@@ -31,7 +127,7 @@ namespace InAppPurchaseTest.ViewModels
 
 	public class PurchaseViewModel : BaseViewModel
 
-    {
+    {   
         string myAppProductId;
 
         private string itemId;
@@ -47,8 +143,11 @@ namespace InAppPurchaseTest.ViewModels
 
         private bool itemIsPurchased;
         private bool itemReceiptIsVerified;
+        private bool itemReceiptIsVerifiedExternally;
 
         private InAppBillingProduct inAppBillingProduct;
+
+        private AppleReceipt myAppReceipt = null;
 
         
         PurchaseService _purchaseService;
@@ -176,6 +275,12 @@ namespace InAppPurchaseTest.ViewModels
              get => itemReceiptIsVerified;
             set => SetProperty(ref itemReceiptIsVerified, value);
         }
+
+        public bool ItemReceiptIsVerifiedExternally
+        {
+             get => itemReceiptIsVerifiedExternally;
+            set => SetProperty(ref itemReceiptIsVerifiedExternally, value);
+        }
         
         public Color ConnectionColor
         {
@@ -297,28 +402,47 @@ namespace InAppPurchaseTest.ViewModels
             #endregion
 
             #region Button_Is_Verified_Externally_Clicked_Action
+            // This method does not make much sense, is left only for future tests
             private async void Button_Is_Verified_Externally_Clicked_Action(object obj)
             {
+                
                 var wrapper = DependencyService.Get<IMyIAPWrapper>();
 
                 //var theResult = await wrapper.ReturnPrice(new string[] {myAppProductId });
 
-                var purchaseResult = await wrapper.ReturnPurchases(new string[] {myAppProductId });
+                var purchases = await wrapper.ReturnPurchases(new string[] {myAppProductId });
 
 
-                var receiptResult = await wrapper.BuyNativeAndGetReceipt(purchaseResult[0]);
+                //var receipt = await wrapper.BuyNativeAndGetReceipt(purchases[0]);
 
+                // Save the Receipt somewhere else if wanted
+                myAppReceipt = await wrapper.BuyNativeAndGetReceipt(purchases[0]);          
 
-                //Purchase _purchase = new Purchase();
-                //await _purchaseService.Buy(_purchase);
+                string myAppReceiptString = Convert.ToBase64String(myAppReceipt.Data);
+
+                var verify = DependencyService.Get<IInAppBillingVerifyPurchase>();  
+                
+                //try to purchase item
+                var purchase = await CrossInAppBilling.Current.PurchaseAsync(myAppProductId, ItemType.InAppPurchase, verify);
+                if(purchase == null)
+	            {
+		            //Not purchased, may also throw exception to catch
+                    ItemReceiptIsVerifiedExternally = false;
+	            }
+	            else
+	            {
+		            //Purchased!
+                    ItemReceiptIsVerifiedExternally = true;
+                    //return true;
+	            }
 
                 int dummy4773 = 1;
             }
             #endregion
 
             #region Button_Get_Availabe_Products_Clicked_Action
-        private async void Button_Get_Availabe_Products_Clicked_Action(object obj)
-        {
+            private async void Button_Get_Availabe_Products_Clicked_Action(object obj)
+            {
             var billing = CrossInAppBilling.Current;
             var productIds = new string[] {myAppProductId};
 
@@ -394,13 +518,13 @@ finally
         }
         #endregion
 
-        #region Button_Get_Purchase_State_Clicked_Action
-        private async void Button_Get_Purchase_State_Clicked_Action(object obj)
-        {
-            //ItemIsPurchased = !ItemIsPurchased;
-            ItemIsPurchased = await WasItemPurchased_PlugIn(myAppProductId);
-        }
-        #endregion
+            #region Button_Get_Purchase_State_Clicked_Action
+            private async void Button_Get_Purchase_State_Clicked_Action(object obj)
+            {
+                //ItemIsPurchased = !ItemIsPurchased;
+                ItemIsPurchased = await WasItemPurchased_PlugIn(myAppProductId);
+            }
+            #endregion
 
         #region Button_InAppPurchase_Clicked_Action
         private async void Button_InAppPurchase_Clicked_Action(object obj)
@@ -417,8 +541,6 @@ finally
         #region Task VerifyThisPurchase using the PlugIn
         public async Task<bool> VerifyThisPurchase_PlugIn(string productId)
         {
-          
-
             var billing = CrossInAppBilling.Current;
             try
             {            
@@ -429,13 +551,11 @@ finally
 		            //Couldn't connect to billing
 		            return false;
 	            }
-
-                var verify = DependencyService.Get<IInAppBillingVerifyPurchase>();
-
-                // Only a dummy test implemented:
-                // With these Strings, Data = "RightData" and Signature = "RightSignature" we get true returned
-                // await verify.VerifyPurchase("RightData", "RightSignature", myAppProductId);
-
+            
+                 var verify = DependencyService.Get<IInAppBillingVerifyPurchase>();
+            
+                // Only a dummy test implemented: Compares the Receipt with itself
+                
                 //try to purchase item
                 var purchase = await CrossInAppBilling.Current.PurchaseAsync(productId, ItemType.InAppPurchase, verify);
 	            if(purchase == null)

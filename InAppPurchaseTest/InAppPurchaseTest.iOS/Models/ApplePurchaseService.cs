@@ -4,10 +4,8 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Foundation;
 using StoreKit;
-using Xamarin.InAppPurchasing;
 
 namespace Xamarin.InAppPurchasing.iOS
-//namespace InAppPurchaseTest.iOS
 {
     public class ApplePurchaseService : PurchaseService
     {

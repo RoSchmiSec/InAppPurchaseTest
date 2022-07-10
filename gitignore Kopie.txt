@@ -254,3 +254,4 @@ paket-files/
 # Xamarin
 *.userprefs
 Resource.designer.cs
+
