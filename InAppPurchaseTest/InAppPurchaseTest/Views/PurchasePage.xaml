@@ -4,26 +4,31 @@
              x:Class="InAppPurchaseTest.Views.PurchasePage"     
              Title="{Binding Title}">
     <StackLayout>
+        <Label Text="Buy/Restore Pro-Edition" TextColor="Orange" HorizontalOptions="Center"  Margin="0,10,0,0" FontSize="Title"/>
         <StackLayout Orientation="Horizontal" Spacing="20" Padding="15">
-            <Label Text="Server Connection: " FontSize="Medium" />
-            <Label Text="{Binding ConnectionResult}" BackgroundColor="{Binding ConnectionColor}" FontSize="Medium"/>
-            
+            <Button Text="Test Server Connection: " Margin="0,-5 ,0,-5" FontSize="Medium" HeightRequest="17" BorderWidth= "0" BackgroundColor="Transparent" TextColor="CadetBlue" Command="{Binding Button_Test_Server_Connection_Clicked_Command}"/>  
+            <Label Text="{Binding ConnectionResult}"  BackgroundColor="{Binding ConnectionColor}" FontSize="Medium"/>           
         </StackLayout>
+    <ScrollView>
     <StackLayout  Spacing="20" Padding="15">
         <StackLayout Orientation="Horizontal">
             <Button Text="  Is purchased ? " Command="{Binding Button_Get_Purchase_State_Clicked_Command}"
             BackgroundColor="{StaticResource Primary}"/>
             <CheckBox  IsEnabled="False" HeightRequest="20" IsChecked="{Binding ItemIsPurchased}"/>
-            <Button Text=" Is verified ? " Command="{Binding Button_Get_Verify_State_Clicked_Command}"
+            <Button Text=" Verify &amp; Restore " Command="{Binding Button_Get_Verify_State_Clicked_Command}"
             BackgroundColor="{StaticResource Primary}"/>
             <CheckBox  IsEnabled="False" HeightRequest="20" IsChecked="{Binding ItemReceiptIsVerified}"/>
         </StackLayout>
-        <StackLayout Orientation="Horizontal">
+        <StackLayout IsVisible="{Binding RestoreMessage_IsVisible}">
+            <Label Text="You are directed to the Apple Purchase Service now:" FontSize="Subtitle"/>
+            <Label TextColor="Red" Text="Tab the &apos;Buy&apos; button. The price is not charged again!" FontSize="Subtitle"/>
+        </StackLayout>
+        <StackLayout Orientation="Horizontal"  IsVisible="false">
             <Button Text=" Is verified ext ? " Command="{Binding Button_Is_Verified_Externally_Clicked_Command}"
             BackgroundColor="{StaticResource Primary}"/>
             <CheckBox  IsEnabled="False" HeightRequest="20" IsChecked="{Binding ItemReceiptIsVerifiedExternally}"/>
         </StackLayout>
-         <Button Text="Show Purchase Details" Command="{Binding Button_Get_Availabe_Products_Clicked_Command}"
+         <Button Text="Show Purchase Details" Margin="0, -5, 0, -5" Command="{Binding Button_Get_Availabe_Products_Clicked_Command}"
             BackgroundColor="{StaticResource Primary}"/>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -45,11 +50,18 @@
             <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" TextColor="Gray" Text="{Binding ItemDescription_2}" BackgroundColor="{Binding BkgdColor}" IsReadOnly="True" />
             <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" TextColor="Gray" Text="{Binding ItemDuration}" BackgroundColor="{Binding BkgdColor}" IsReadOnly="True"/>
             <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" TextColor="Gray" Text="{Binding ItemPrice}" BackgroundColor="{Binding BkgdColor}" IsReadOnly="True"/>
-        </Grid>       
-    <Button Margin="0,10,0,0" Text="InAppPurchase"
-                        Command="{Binding Button_InAppPurchase_Clicked_Command}"
-                        BackgroundColor="{StaticResource Primary}"/>
+        </Grid>
+        <Button Text="{Binding Read_More_Text}" HorizontalOptions="Start" FontSize="Medium" HeightRequest="17" BorderWidth= "0" BackgroundColor="Transparent" TextColor="CadetBlue" Command="{Binding Button_Read_More_Text_Clicked_Command}"/>  
+        <StackLayout Margin="0,-5 ,0,-5" IsVisible="{Binding Read_More_Text_State}">
+            <Label Text="Some more Explanations"/>
+            <Label Text="Some more Explanations"/>
         </StackLayout>
+        <Button Margin="0,5,0,0" Text="Buy Pro-Edition"
+                        Command="{Binding Button_InAppPurchase_Clicked_Command}"
+                        IsVisible="{Binding ItemIsNotPurchased}"
+                        BackgroundColor="{StaticResource Primary}"/>       
+        </StackLayout>
+        </ScrollView>
      </StackLayout>
 </ContentPage>
 

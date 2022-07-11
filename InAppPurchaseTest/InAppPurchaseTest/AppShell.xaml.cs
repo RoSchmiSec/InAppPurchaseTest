@@ -8,6 +8,10 @@ namespace InAppPurchaseTest
 {
     public partial class AppShell : Xamarin.Forms.Shell
     {
+        // This is the App specific flag indicating that the item is purchased
+        // It is read in the constructor of e.g. PurchaseViewModel.cs
+        public bool Global_Is_Purchased_Flag = false;
+
         public AppShell()
         {
             InitializeComponent();
